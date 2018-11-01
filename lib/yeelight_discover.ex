@@ -51,7 +51,8 @@ end
 
 
   def handle_info({:udp, socket, ip, port, data}, state) do
-    Logger.debug "Received UDP discovery message from ip: #{ip |> :inet.ntoa() |> to_string()} port: #{port}"
+    Logger.debug "Received UDP message from ip: #{ip |> :inet.ntoa() |> to_string()} port: #{port}"
+    Logger.debug "Message data: #{data}"
     :inet.setopts(socket, [active: 1])
     new_device = YeelightDevice.from_discovery_response(data)
     DeviceRegistry.put(ip, new_device)

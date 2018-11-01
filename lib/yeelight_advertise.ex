@@ -38,6 +38,7 @@ defmodule YeelightAdvertise do
 
   def handle_info({:udp, socket, ip, port, data}, state) do
     Logger.debug "Received UDP message from ip: #{ip |> :inet.ntoa() |> to_string()} port: #{port}"
+    Logger.debug "Message data: #{data}"
     :inet.setopts(socket, [active: 1])
     if is_advertisment?(data) do
         Logger.debug("Recognised as an advertisment message")

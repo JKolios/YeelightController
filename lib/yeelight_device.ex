@@ -1,6 +1,8 @@
 defmodule YeelightDevice do
     defstruct [:location, :id, :model, :fw_ver, :power, :support, :bright, :color_mode, :ct, :rgb, :hue, :sat, :device_name]
 
+    @color_modes %{"1" => "Color","2" => "Temperature", "3" => "HSV"}
+
     def from_discovery_response(response_payload) do
         %YeelightDevice{
           location: location(response_payload), 
@@ -48,7 +50,7 @@ defmodule YeelightDevice do
     end
 
     defp color_mode(response_payload) do
-        get_first_match(response_payload, ~r/.*color_mode: (.*)\r/)
+        @color_modes[get_first_match(response_payload, ~r/.*color_mode: (.*)\r/)]
     end
 
     defp ct(response_payload) do
