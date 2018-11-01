@@ -2,12 +2,14 @@ defmodule YeelightController.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :yeelight_controller,
-     version: "0.1.0",
-     elixir: "~> 1.4",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps()]
+    [
+      app: :yeelight_controller,
+      version: "0.1.0",
+      elixir: "~> 1.4",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      deps: deps()
+    ]
   end
 
   # Configuration for the OTP application
@@ -30,6 +32,7 @@ defmodule YeelightController.Mixfile do
   defp deps do
     [
       {:socket, "~> 0.3"},
+      {:poison, "~> 3.1"}
     ]
   end
 end
