@@ -7,16 +7,27 @@ defmodule Yeelight do
     {:ok, {discovery_server, advertise_server}}
   end
 
-  def get_controller(device_name) do
-    device = Yeelight.DeviceRegistry.get_by_name(device_name)
-    device |> Yeelight.Control.start_link()
+  def devices do
+    Yeelight.DeviceRegistry.all
+  end
+
+  def control_by_name(device_name) do
+    Yeelight.DeviceRegistry.get_by_name(device_name) |> control
+  end
+
+  def control_by_ip(device_ip) do
+    Yeelight.DeviceRegistry.get_by_ip(device_ip) |> control
+  end
+
+  def control(device) do
+    device |> Yeelight.Control.start_link()  
   end
 
   def all_devices(func_name, params) do
     Enum.each(
       Map.values(Yeelight.DeviceRegistry.all()),
       fn device ->
-        {:ok, controller} = get_controller(device.device_name)
+        {:ok, controller} = device |> control
         apply(Yeelight.Control, func_name, [controller | params])
         Yeelight.Control.stop(controller)
       end
