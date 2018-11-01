@@ -11,4 +11,15 @@ defmodule Yeelight do
     device = Yeelight.DeviceRegistry.get_by_name(device_name)
     device |> Yeelight.Control.start_link()
   end
+
+  def all_devices(func_name, params) do
+    Enum.each(
+      Map.values(Yeelight.DeviceRegistry.all()),
+      fn device ->
+        {:ok, controller} = get_controller(device.device_name)
+        apply(Yeelight.Control, func_name, [controller | params])
+        Yeelight.Control.stop(controller)
+      end
+    )
+  end
 end

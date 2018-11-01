@@ -13,10 +13,6 @@ defmodule Yeelight.Control do
     GenServer.stop(server, reason)
   end
 
-  def toggle(server) do
-    control(server, "toggle", [])
-  end
-
   def get_prop(server, props) do
     control(server, "get_prop", props)
   end
@@ -25,8 +21,32 @@ defmodule Yeelight.Control do
     control(server, "set_ct_abx", [ct_value, effect, duration])
   end
 
+  def set_rgb(server, rgb_value, effect, duration) do
+    control(server, "set_rgb", [rgb_value, effect, duration])
+  end
+
+  def set_hsv(server, hue, sat, effect, duration) do
+    control(server, "set_hsv", [hue, sat, effect, duration])
+  end
+
+  def set_bright(server, brightness, effect, duration) do
+    control(server, "set_bright", [brightness, effect, duration])
+  end
+
+  def set_power(server, power, effect, duration, mode \\ 0) do
+    control(server, "set_power", [power, effect, duration, mode])
+  end
+
+  def toggle(server) do
+    control(server, "toggle", [])
+  end
+
   def set_name(server, name) do
     control(server, "set_name", [name])
+  end
+
+  def set_default(server) do
+    control(server, "set_default", [])
   end
 
   defp control(server, method, params) do
