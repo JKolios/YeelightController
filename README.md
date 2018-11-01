@@ -4,7 +4,7 @@
 
 ## Installation
 
-Clone this repo, then run `mix deps.get` to fetch all the dependencies.
+Clone this repo, then run `mix deps.get` to fetch all dependencies.
 
 ## Usage
 All examples are meant to be executed using `iex -S mix`.
