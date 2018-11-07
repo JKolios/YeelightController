@@ -10,13 +10,10 @@ defmodule Yeelight.Discovery do
     children = [
       Yeelight.Device.Registry,
       Yeelight.Discovery.DiscoveryServer,
-      Yeelight.Discovery.AdvertisementServer
+      Yeelight.Discovery.AdvertisementServer,
+      worker(Yeelight.Scheduler, [])
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
-  end
-
-  def send_discovery_message do
-    Yeelight.Discovery.DiscoveryServer.send_discovery_message()
   end
 end

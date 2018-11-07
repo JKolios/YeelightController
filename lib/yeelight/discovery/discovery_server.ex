@@ -61,6 +61,7 @@ defmodule Yeelight.Discovery.DiscoveryServer do
   @impl true
   def handle_cast({:send_discover_message}, state) do
     Logger.debug("Received send_discover_message call")
+    Yeelight.Device.Registry.clear()
     send_discover_message(state[:socket], @discovery_address, @discovery_port)
     {:noreply, state}
   end

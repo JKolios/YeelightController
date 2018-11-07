@@ -28,4 +28,8 @@ defmodule Yeelight.Device.Registry do
   def put(device_ip, device) do
     Agent.update(__MODULE__, fn map -> Map.put(map, device_ip, device) end)
   end
+
+  def clear do
+    Agent.update(__MODULE__, fn _ -> Map.new() end)
+  end
 end
