@@ -41,12 +41,20 @@ defmodule Yeelight.Control do
     control(server, "toggle", [])
   end
 
-  def set_name(server, name) do
-    control(server, "set_name", [name])
-  end
-
   def set_default(server) do
     control(server, "set_default", [])
+  end
+
+  def start_cf(server, count, action, flow_expression) do
+    control(server, "start_cf", [count, action, flow_expression])
+  end
+
+  def stop_cf(server) do
+    control(server, "start_cf", [])
+  end
+
+  def set_name(server, name) do
+    control(server, "set_name", [name])
   end
 
   defp control(server, method, params) do
@@ -55,6 +63,7 @@ defmodule Yeelight.Control do
 
   # Callbacks
 
+  @impl true
   def init(state) do
     Yeelight.Control.MessageIdCounter.start_link()
     opts = [:binary, active: true]
@@ -70,6 +79,7 @@ defmodule Yeelight.Control do
     {:ok, %{state | socket: socket}}
   end
 
+  @impl true
   def handle_call({:control, method, params}, _from, state) do
     payload = Yeelight.Control.Message.construct(method, params)
     Logger.debug("Sending control payload: #{payload}")
@@ -77,11 +87,13 @@ defmodule Yeelight.Control do
     {:reply, :ok, state}
   end
 
+  @impl true
   def handle_info({:tcp, _socket, msg}, state) do
     Logger.debug("Received RESULT message:#{msg}")
     {:noreply, state}
   end
 
+  @impl true
   def terminate(reason, state) do
     Logger.debug("Terminating the control server. Reason: #{reason}")
     :ok = :gen_tcp.close(state[:socket])

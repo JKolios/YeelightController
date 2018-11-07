@@ -1,7 +1,9 @@
-defmodule Yeelight.DeviceRegistry do
+defmodule Yeelight.Device.Registry do
   use Agent
+  require Logger
 
-  def start_link do
+  def start_link(_) do
+    Logger.debug("Device Registry started")
     Agent.start_link(fn -> Map.new() end, name: __MODULE__)
   end
 

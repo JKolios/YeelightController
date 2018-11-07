@@ -1,17 +1,18 @@
-defmodule Yeelight.Discover.Advertise do
+defmodule Yeelight.Discovery.AdvertisementServer do
   use GenServer
   require Logger
 
   @discovery_address {239, 255, 255, 250}
   @discovery_port 1982
 
-  def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, opts)
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
   # Server Callbacks
 
-  def init(:ok) do
+  @impl true
+  def init(_) do
     Logger.debug("Advertisment server starting")
     {:ok, socket} = udp_advertisment_socket()
     {:ok, %{socket: socket}}
@@ -34,6 +35,7 @@ defmodule Yeelight.Discover.Advertise do
     end
   end
 
+  @impl true
   def handle_info({:udp, socket, ip, port, data}, state) do
     Logger.debug(
       "Received UDP message from ip: #{ip |> :inet.ntoa() |> to_string()} port: #{port}"
@@ -45,12 +47,18 @@ defmodule Yeelight.Discover.Advertise do
     if is_advertisment?(data) do
       Logger.debug("Recognised as an advertisment message")
       new_device = Yeelight.Device.from_discovery_response(data)
-      Yeelight.DeviceRegistry.put(ip, new_device)
+      Yeelight.Device.Registry.put(ip, new_device)
     else
       Logger.debug("Discarded")
     end
 
     {:noreply, state}
+  end
+
+  @impl true
+  def terminate(reason, state) do
+    Logger.debug("Terminating the advertisment server. Reason: #{reason}")
+    :ok = :gen_tcp.close(state[:socket])
   end
 
   defp is_advertisment?(response_data) do

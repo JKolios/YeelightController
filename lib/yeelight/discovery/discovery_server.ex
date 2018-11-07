@@ -1,4 +1,4 @@
-defmodule Yeelight.Discover do
+defmodule Yeelight.Discovery.DiscoveryServer do
   use GenServer
   require Logger
 
@@ -7,12 +7,12 @@ defmodule Yeelight.Discover do
   @discovery_port 1982
   @discovery_response_port 1337
 
-  def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, opts)
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
-  def send_discover_message(server) do
-    GenServer.cast(server, {:send_discover_message})
+  def send_discovery_message() do
+    GenServer.cast(__MODULE__, {:send_discover_message})
   end
 
   defp send_discover_message(socket, address, port) do
@@ -25,7 +25,8 @@ defmodule Yeelight.Discover do
 
   # Server Callbacks
 
-  def init(:ok) do
+  @impl true
+  def init(_) do
     Logger.debug("Discovery server starting")
     {:ok, socket} = udp_discovery_socket()
     {:ok, %{socket: socket}}
@@ -44,6 +45,7 @@ defmodule Yeelight.Discover do
     end
   end
 
+  @impl true
   def handle_info({:udp, socket, ip, port, data}, state) do
     Logger.debug(
       "Received UDP message from ip: #{ip |> :inet.ntoa() |> to_string()} port: #{port}"
@@ -52,13 +54,20 @@ defmodule Yeelight.Discover do
     Logger.debug("Message data: #{data}")
     :inet.setopts(socket, active: 1)
     new_device = Yeelight.Device.from_discovery_response(data)
-    Yeelight.DeviceRegistry.put(ip, new_device)
+    Yeelight.Device.Registry.put(ip, new_device)
     {:noreply, state}
   end
 
+  @impl true
   def handle_cast({:send_discover_message}, state) do
     Logger.debug("Received send_discover_message call")
     send_discover_message(state[:socket], @discovery_address, @discovery_port)
     {:noreply, state}
+  end
+
+  @impl true
+  def terminate(reason, state) do
+    Logger.debug("Terminating the discover server. Reason: #{reason}")
+    :ok = :gen_tcp.close(state[:socket])
   end
 end
