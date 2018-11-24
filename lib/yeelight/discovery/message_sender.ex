@@ -2,9 +2,10 @@ defmodule Yeelight.Discovery.MessageSender do
   use Task
   require Logger
 
-  @discovery_period 2_000
+  @discovery_period 60_000
 
   def start_link(_arg) do
+    Yeelight.Discovery.Socket.send_discovery_message()
     Task.start_link(__MODULE__, :poll, [])
   end
 

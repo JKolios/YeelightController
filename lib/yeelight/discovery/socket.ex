@@ -6,13 +6,15 @@ defmodule Yeelight.Discovery.Socket do
   @discovery_port 1982
   @discovery_message ~s(M-SEARCH * HTTP/1.1\r\nHOST: 239.255.255.250:1982\r\nMAN: "ssdp:discover"\r\nST: wifi_bulb\r\n\r\n)
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, name: __MODULE__)
+  def start_link(_args) do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   @impl true
   def init(_args) do
-    {:ok, udp_discovery_socket()}
+    socket = udp_discovery_socket()
+    send_discovery_message()
+    {:ok, socket}
   end
 
   defp udp_discovery_socket do
@@ -63,16 +65,16 @@ defmodule Yeelight.Discovery.Socket do
   end
 
   @impl true
-  def handle_cast(:send_discover_message, state) do
-    Logger.debug("Received send_discover_message call")
+  def handle_cast(:send_discover_message, socket) do
+    Logger.debug("Received send_discover_message cast")
     Yeelight.Device.Registry.clear()
-    send_discover_message(state)
-    {:noreply, state}
+    send_discover_message(socket)
+    {:noreply, socket}
   end
 
   defp send_discover_message(socket) do
     socket |> send_data(@discovery_address, @discovery_port, @discovery_message)
-    Logger.debug("Discovery message sender: message sent")
+    Logger.debug("Discovery message sent")
   end
 
   defp send_data(socket, address, port, data) do
