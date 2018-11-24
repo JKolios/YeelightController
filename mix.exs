@@ -33,7 +33,6 @@ defmodule YeelightController.Mixfile do
     [
       {:socket, "~> 0.3"},
       {:poison, "~> 3.1"},
-      {:quantum, "~> 2.3"},
       {:timex, "~> 3.0"}
     ]
   end

@@ -31,9 +31,3 @@ use Mix.Config
 
 config :logger, :console,
   format: "$time $metadata[$level] $levelpad$message\n"
-
-config :yeelight_controller, Yeelight.Scheduler,
-  jobs: [
-    # Discover devices every 5 minutes
-    {"*/5 * * * *",   fn -> Yeelight.Discovery.DiscoveryServer.send_discovery_message end},
-  ]

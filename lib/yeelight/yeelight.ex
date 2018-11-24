@@ -4,8 +4,6 @@ defmodule Yeelight do
   @impl true
   def start(_type, _args) do
     {:ok, supervisor} = Yeelight.Discovery.start_link()
-    :ok = Yeelight.Discovery.DiscoveryServer.send_discovery_message()
-    {:ok, supervisor}
   end
 
   def devices do

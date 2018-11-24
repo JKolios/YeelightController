@@ -9,9 +9,8 @@ defmodule Yeelight.Discovery do
   def init(_arg) do
     children = [
       Yeelight.Device.Registry,
-      Yeelight.Discovery.DiscoveryServer,
-      Yeelight.Discovery.AdvertisementServer,
-      worker(Yeelight.Scheduler, [])
+      Yeelight.Discovery.Socket,
+      Yeelight.Discovery.MessageSender
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
