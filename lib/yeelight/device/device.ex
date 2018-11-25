@@ -35,6 +35,12 @@ defmodule Yeelight.Device do
     }
   end
 
+  def update_from_notification(device, response_payload) do
+    {:ok, update_params} = Poison.Parser.parse(response_payload, %{keys: :atoms!})
+    updated_device = Map.merge(device, update_params[:params])
+    Yeelight.Device.Registry.put(ip(device), updated_device)
+  end
+
   def ip(device) do
     {:ok, parsed_ip} =
       :inet.parse_address(to_charlist(get_first_match(device.location, ~r/.*\/\/(.*):/)))

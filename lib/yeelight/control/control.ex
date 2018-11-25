@@ -89,7 +89,14 @@ defmodule Yeelight.Control do
 
   @impl true
   def handle_info({:tcp, _socket, msg}, state) do
-    Logger.debug("Received RESULT message:#{msg}")
+    Logger.debug("Received message on control connection: #{msg}")
+    cond do
+      is_result_message?(msg) ->
+        Logger.debug("Message identified as RESULT")
+      is_notification_message?(msg) ->
+        Logger.debug("Message identified as NOTIFICATION")
+        Yeelight.Device.update_from_notification(state[:device], msg)
+    end
     {:noreply, state}
   end
 
@@ -97,5 +104,13 @@ defmodule Yeelight.Control do
   def terminate(reason, state) do
     Logger.debug("Terminating the control server. Reason: #{reason}")
     :ok = :gen_tcp.close(state[:socket])
+  end
+
+  def is_result_message?(msg) do
+    Regex.match?(~r/\"result\"/, msg)
+  end
+
+  def is_notification_message?(msg) do
+    Regex.match?(~r/{\"method\":\"props\"/, msg)
   end
 end

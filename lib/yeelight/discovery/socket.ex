@@ -81,11 +81,11 @@ defmodule Yeelight.Discovery.Socket do
     socket |> :gen_udp.send(address, port, data)
   end
 
-  defp is_advertisment?(response_data) do
-    Regex.match?(~r/^NOTIFY */, response_data)
+  defp is_advertisment?(msg) do
+    Regex.match?(~r/^NOTIFY */, msg)
   end
 
-  defp is_discovery_response?(response_data) do
-    Regex.match?(~r/^HTTP\/1.1 200 OK/, response_data)
+  defp is_discovery_response?(msg) do
+    Regex.match?(~r/^HTTP\/1.1 200 OK/, msg)
   end
 end
