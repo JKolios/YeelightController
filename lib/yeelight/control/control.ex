@@ -218,6 +218,13 @@ defmodule Yeelight.Control do
       is_notification_message?(msg) ->
         Logger.debug("Message identified as NOTIFICATION")
         Yeelight.Device.update_from_notification(state[:device], msg)
+
+      is_error_message?(msg) ->
+        Logger.debug("Message identified as ERROR")
+        Logger.debug("Error message: #{Poison.Parser.parse!(msg)["error"]["message"]}")
+
+      true ->
+        Logger.debug("Message discarded. This indicates a bug")
     end
 
     {:noreply, state}
@@ -225,7 +232,7 @@ defmodule Yeelight.Control do
 
   @impl true
   def terminate(reason, state) do
-    Logger.debug("Terminating the control server. Reason: #{reason}")
+    # Logger.debug("Terminating the control server. Reason: #{reason}")
     :ok = :gen_tcp.close(state[:socket])
   end
 
@@ -235,5 +242,9 @@ defmodule Yeelight.Control do
 
   def is_notification_message?(msg) do
     Regex.match?(~r/{\"method\":\"props\"/, msg)
+  end
+
+  def is_error_message?(msg) do
+    Regex.match?(~r/\"error\":/, msg)
   end
 end

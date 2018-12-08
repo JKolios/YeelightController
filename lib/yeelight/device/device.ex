@@ -36,8 +36,8 @@ defmodule Yeelight.Device do
   end
 
   def update_from_notification(device, response_payload) do
-    {:ok, update_params} = Poison.Parser.parse(response_payload, %{keys: :atoms!})
-    updated_device = Map.merge(device, update_params[:params])
+    {:ok, device_update} = Poison.Parser.parse(response_payload)
+    updated_device = Map.merge(device, clean_update_params(device_update["params"]))
     Yeelight.Device.Registry.put(ip(device), updated_device)
   end
 
@@ -106,5 +106,15 @@ defmodule Yeelight.Device do
 
   defp get_first_match(data, regex) do
     List.last(Regex.run(regex, data, capture: :all_but_first))
+  end
+
+  defp clean_update_params(update_params) do
+    {allowed_update_params, _} = Map.split(update_params, allowed_update_keys())
+    allowed_update_params
+  end
+
+  defp allowed_update_keys do
+    allowed_atom_keys = List.delete(Map.keys(%Yeelight.Device{}), :__struct__)
+    Enum.map(allowed_atom_keys, fn key -> Atom.to_string(key) end)
   end
 end

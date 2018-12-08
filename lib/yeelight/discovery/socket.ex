@@ -78,6 +78,13 @@ defmodule Yeelight.Discovery.Socket do
   end
 
   defp send_data(socket, address, port, data) do
+    Logger.debug(
+      "Discovery socket sending to: Address: #{address |> :inet.ntoa() |> to_string()} Port: #{
+        port
+      }"
+    )
+
+    Logger.debug("Payload: \n#{data}")
     socket |> :gen_udp.send(address, port, data)
   end
 
