@@ -6,12 +6,19 @@
 
 Clone this repo, then run `mix deps.get` to fetch all dependencies.
 
+## Configuration
+
+Set the following varibles in config.exs:
+    * `networkInterfaceIP`: The IP of the network interface you want to use to connect to yeelight devices.
+    * `discoveryMessageSendInterval`: The interval (in ms) at which the app will probe your network to refresh the available devices
+
 ## Usage
 All examples are meant to be executed using `iex -S mix`.
 
 ### Device Discovery
+Device discovery will start automatically when the application starts and should automatically monitor new device announcements. Powering down a device does not remove it from the list of discovered devices.
+
 ```
-Yeelight.start_discovery # Probes the local network for Yeelight Products
 Yeelight.devices # Lists all discovered devices
 ```
 
@@ -28,14 +35,12 @@ Yeelight.start_discovery
 
 ### Controlling a Device
 ```
-Yeelight.start_discovery
 {:ok, connection} = Yeelight.control_by_name("Ceiling_Light")
 connection |> Yeelight.Control.toggle # Toggles the light on or off
 ```
 
 ### Controlling all Devices at once
 ```
-Yeelight.start_discovery
 Yeelight.all_devices(:toggle,[]) # toggles all discovered lights on or off
 ```
 
