@@ -67,8 +67,6 @@ defmodule Yeelight.Discovery.Socket do
 
   @impl true
   def handle_cast(:send_discover_message, socket) do
-    Logger.debug("Received send_discover_message cast")
-    Yeelight.Device.Registry.clear()
     send_discover_message(socket)
     {:noreply, socket}
   end

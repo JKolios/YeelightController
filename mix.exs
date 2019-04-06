@@ -3,7 +3,7 @@ defmodule YeelightController.Mixfile do
 
   def project do
     [
-      app: :yeelight_controller,
+      app: :yeelight,
       version: "0.1.0",
       elixir: "~> 1.4",
       build_embedded: Mix.env() == :prod,

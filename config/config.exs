@@ -30,4 +30,9 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :logger, :console,
-  format: "$time $metadata[$level] $levelpad$message\n"
+  format: "$time $metadata[$level] $levelpad$message\n",
+  verbose: true
+
+config :yeelight,
+  networkInterfaceIP: {192, 168, 1, 4},
+  discoveryMessageSendInterval: 300000

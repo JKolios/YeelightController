@@ -13,6 +13,7 @@ defmodule Yeelight.Discovery.MessageSender do
     receive do
     after
       @discovery_period ->
+        Yeelight.Device.Registry.clear()
         Yeelight.Discovery.Socket.send_discovery_message()
         poll()
     end

@@ -3,7 +3,7 @@ defmodule Yeelight do
 
   @impl true
   def start(_type, _args) do
-    {:ok, supervisor} = Yeelight.Discovery.start_link()
+    {:ok, _supervisor} = Yeelight.Discovery.start_link()
   end
 
   def devices do
