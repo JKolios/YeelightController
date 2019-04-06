@@ -8,9 +8,10 @@ Clone this repo, then run `mix deps.get` to fetch all dependencies.
 
 ## Configuration
 
-Set the following varibles in config.exs:
-    * `networkInterfaceIP`: The IP of the network interface you want to use to connect to yeelight devices.
-    * `discoveryMessageSendInterval`: The interval (in ms) at which the app will probe your network to refresh the available devices
+Set the following varibles in `config/config.exs`:
+    
+    1. `networkInterfaceIP`: The IP of the network interface you want to use to connect to yeelight devices.
+    2. `discoveryMessageSendInterval`: The interval (in ms) at which the app will probe your network to refresh the available devices
 
 ## Usage
 All examples are meant to be executed using `iex -S mix`.
