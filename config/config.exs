@@ -34,5 +34,4 @@ config :logger, :console,
   verbose: true
 
 config :yeelight,
-  networkInterfaceIP: {192, 168, 1, 4},
   discoveryMessageSendInterval: 300000

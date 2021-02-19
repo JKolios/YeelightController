@@ -26,7 +26,7 @@ defmodule Yeelight.Discovery.Socket do
       multicast_loop: false,
       multicast_ttl: 4,
       reuseaddr: true,
-      ip: Application.get_env(:yeelight, :networkInterfaceIP)
+      ip: {0, 0, 0, 0}
     ]
 
     {:ok, socket} = :gen_udp.open(@discovery_port, udp_options)
