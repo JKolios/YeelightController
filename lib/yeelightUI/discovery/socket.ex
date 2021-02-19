@@ -35,7 +35,7 @@ defmodule Yeelight.Discovery.Socket do
   end
 
   def send_discovery_message() do
-    # Logger.debug("send_discovery_message called")
+    Logger.debug("send_discovery_message called")
     GenServer.cast(__MODULE__, :send_discover_message)
   end
 

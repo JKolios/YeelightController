@@ -1,0 +1,8 @@
+<title>Device info</title>
+<p>Device Name: <%= deviceByIP(@ip).device_name %></p>
+<p>Model: <%= deviceByIP(@ip).model %></p>
+<p>Power: <%= deviceByIP(@ip).power %></p>
+<p>Brightness: <%= deviceByIP(@ip).bright %></p>
+<p>Color Mode: <%= deviceByIP(@ip).color_mode %></p>
+<p><a href="/lights">Back to device list</a></p>
+

@@ -1,4 +1,7 @@
 defmodule Yeelight.Device do
+  require Logger
+
+  @derive Jason.Encoder
   defstruct [
     :location,
     :id,
@@ -37,6 +40,7 @@ defmodule Yeelight.Device do
 
   def update_from_notification(device, response_payload) do
     {:ok, device_update} = Poison.Parser.parse(response_payload)
+    Logger.debug("Updating device with patch #{device_update}")
     updated_device = Map.merge(device, clean_update_params(device_update["params"]))
     Yeelight.Device.Registry.put(ip(device), updated_device)
   end
