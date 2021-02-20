@@ -30,7 +30,7 @@ defmodule Yeelight do
         end  
         updated_device = Yeelight.Device.Registry.get_by_ip(Yeelight.Device.ip(device))
         Logger.debug("Using controller: #{updated_device.controller |> inspect}")
-        result = apply(Yeelight.Control, func_name, [updated_device.controller | params])
+        result = apply(Yeelight.Control.Commands, func_name, [updated_device.controller | params])
         Logger.debug("Command result: #{result}")
         if result == :error do
           Logger.debug("Command error")
