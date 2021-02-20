@@ -13,7 +13,7 @@
   </tr>
 <%= for device <- devices() do %>
   <tr>
-    <td><a href="/lights/<%= ipTupleToString(device.ip) %>"><%= ipTupleToString(device.ip) %></a></td>
+    <td><a href="/<%= ipTupleToString(device.ip) %>"><%= ipTupleToString(device.ip) %></a></td>
     <td><%= device.device_name %></td>
     <td><%= device.model %></td>
     <td><%= device.power %></td>

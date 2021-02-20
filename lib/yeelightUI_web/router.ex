@@ -15,7 +15,7 @@ defmodule YeelightUIWeb.Router do
 
   scope "/", YeelightUIWeb do
     pipe_through :browser
-    resources "/lights", LightsController, only: [:index, :show, :update]
+    resources "/", LightsController, only: [:index, :show, :update]
   end
 
   # Other scopes may use custom stacks.

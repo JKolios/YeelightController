@@ -13,8 +13,7 @@ config :yeelightUI, YeelightUIWeb.Endpoint,
   secret_key_base: "9cRKCb2+Xzu1JUevAySd+z2lMxQoAGPg7f4+SyGLoHxRdneOOqWbT4lQdlqFFOcN",
   render_errors: [view: YeelightUIWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: YeelightUI.PubSub,
-  live_view: [signing_salt: "3Gqk4H1e"],
-  discoveryMessageSendInterval: 300000
+  live_view: [signing_salt: "3Gqk4H1e"]
 
 # Configures Elixir's Logger
 config :logger, :console,

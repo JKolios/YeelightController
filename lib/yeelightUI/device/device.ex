@@ -1,5 +1,6 @@
 defmodule Yeelight.Device do
   require Logger
+  require Jason
 
   @derive Jason.Encoder
   defstruct [
@@ -15,7 +16,8 @@ defmodule Yeelight.Device do
     :rgb,
     :hue,
     :sat,
-    :device_name
+    :device_name,
+    :controller
   ]
 
   @color_modes %{"1" => "Color", "2" => "Temperature", "3" => "HSV"}
@@ -39,9 +41,13 @@ defmodule Yeelight.Device do
   end
 
   def update_from_notification(device, response_payload) do
-    {:ok, device_update} = Poison.Parser.parse(response_payload)
-    Logger.debug("Updating device with patch #{device_update}")
-    updated_device = Map.merge(device, clean_update_params(device_update["params"]))
+    Logger.debug("Starting device update")
+    device_update = Jason.decode!(response_payload, keys: :atoms)
+    Logger.debug("JSON device update: #{device_update |> inspect}")
+    device_state_patch = clean_update_params(device_update[:params])
+    Logger.debug("Updating device with patch: #{device_state_patch |> inspect}")
+    updated_device = Map.merge(device, device_state_patch)
+    Logger.debug("Updated device: #{updated_device |> inspect} with ip #{ip(device) |> inspect}")
     Yeelight.Device.Registry.put(ip(device), updated_device)
   end
 
@@ -118,7 +124,6 @@ defmodule Yeelight.Device do
   end
 
   defp allowed_update_keys do
-    allowed_atom_keys = List.delete(Map.keys(%Yeelight.Device{}), :__struct__)
-    Enum.map(allowed_atom_keys, fn key -> Atom.to_string(key) end)
+    List.delete(Map.keys(%Yeelight.Device{}), :__struct__)
   end
 end

@@ -4,7 +4,7 @@ defmodule Yeelight.Device.Registry do
 
   def start_link(_) do
     Logger.debug("Device Registry started")
-    Agent.start_link(fn -> Map.new() end, name: __MODULE__)
+    Agent.start_link(fn -> %{} end, name: __MODULE__)
   end
 
   def get_by_ip(device_ip) do
@@ -26,7 +26,7 @@ defmodule Yeelight.Device.Registry do
   end
 
   def put(device_ip, device) do
-    Agent.update(__MODULE__, fn map -> Map.put(map, device_ip, device) end)
+    Agent.update(__MODULE__, &Map.put(&1, device_ip, device))
   end
 
   def clear do

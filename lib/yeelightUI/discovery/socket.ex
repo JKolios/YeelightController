@@ -13,7 +13,7 @@ defmodule Yeelight.Discovery.Socket do
   @impl true
   def init(_args) do
     socket = udp_discovery_socket()
-    send_discovery_message()
+    # send_discovery_message()
     {:ok, socket}
   end
 
@@ -69,6 +69,11 @@ defmodule Yeelight.Discovery.Socket do
   def handle_cast(:send_discover_message, socket) do
     send_discover_message(socket)
     {:noreply, socket}
+  end
+
+  @impl true
+  def terminate(reason, _state) do
+    Logger.debug("Control connection terminating with reason: #{reason}")
   end
 
   defp send_discover_message(socket) do

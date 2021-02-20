@@ -1,5 +1,5 @@
 defmodule Yeelight.Control.Message do
-  @derive [Poison.Encoder]
+  @derive Jason.Encoder
   defstruct [:id, :method, :params]
 
   def construct(method, params) do

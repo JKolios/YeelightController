@@ -178,7 +178,14 @@ defmodule Yeelight.Control do
   end
 
   defp control(server, method, params) do
-    GenServer.call(server, {:control, method, params})
+    case GenServer.call(server, {:control, method, params}) do
+      :ok ->
+        Logger.debug("Control action successful")
+        :ok
+      :error ->
+        Logger.debug("Control action failed")
+        :error
+    end
   end
 
   # Callbacks
@@ -186,15 +193,9 @@ defmodule Yeelight.Control do
   @impl true
   def init(state) do
     Yeelight.Control.MessageIdCounter.start_link()
-    opts = [:binary, active: true]
-
-    {:ok, socket} =
-      :gen_tcp.connect(
-        Yeelight.Device.ip(state[:device]),
-        Yeelight.Device.port(state[:device]),
-        opts
-      )
-
+    
+    {:ok, socket} = open_socket(Yeelight.Device.ip(state[:device]), Yeelight.Device.port(state[:device]))
+    Logger.debug("Created socket: #{socket |> inspect}")
     Logger.debug("Opened connection to device: #{state.device.location}")
     {:ok, %{state | socket: socket}}
   end
@@ -203,8 +204,17 @@ defmodule Yeelight.Control do
   def handle_call({:control, method, params}, _from, state) do
     payload = Yeelight.Control.Message.construct(method, params)
     Logger.debug("Sending control payload: #{payload}")
-    :ok = :gen_tcp.send(state[:socket], payload)
-    {:reply, :ok, state}
+    Logger.debug("Using socket: #{state[:socket] |> inspect}")
+    case :gen_tcp.send(state[:socket], payload) do
+      :ok ->
+        Logger.debug("Control payload sent")
+        {:reply, :ok, state}
+      {:error, cause} ->
+        Logger.debug("Control payload send error, cause: #{cause}")
+        {:ok, socket} = open_socket(Yeelight.Device.ip(state[:device]), Yeelight.Device.port(state[:device]))
+        Logger.debug("Created socket: #{socket |> inspect}")
+        {:reply, :error, %{state | socket: socket}}
+    end
   end
 
   @impl true
@@ -221,7 +231,7 @@ defmodule Yeelight.Control do
 
       is_error_message?(msg) ->
         Logger.debug("Message identified as ERROR")
-        Logger.debug("Error message: #{Poison.Parser.parse!(msg)["error"]["message"]}")
+        Logger.debug("Error message: #{msg}")
 
       true ->
         Logger.debug("Message discarded. This indicates a bug")
@@ -229,11 +239,20 @@ defmodule Yeelight.Control do
 
     {:noreply, state}
   end
+  
+  @impl true
+  def handle_info({:tcp_closed, _}, state), do: {:noreply, state}
 
   @impl true
   def terminate(reason, state) do
     Logger.debug("Terminating the control server. Reason: #{reason}")
     :ok = :gen_tcp.close(state[:socket])
+  end
+
+  defp open_socket(ip, port) do
+    opts = [:binary, active: false, reuseaddr: true]
+    Logger.debug("Opening TCP socket to #{ip |> inspect}:#{port}")
+    :gen_tcp.connect(ip, port, opts)
   end
 
   def is_result_message?(msg) do
