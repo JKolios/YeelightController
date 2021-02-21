@@ -1,0 +1,5 @@
+<title>Edit Device Name</title>
+<%= form_for @conn, Routes.lights_path(@conn, :update, @ip), [as: :form_params, method: :put], fn f -> %>
+   Device Name: <%= text_input f, :device_name, value: deviceByIP(@ip).device_name%>
+  <%= submit "Set Name" %>
+<% end %>

@@ -23,7 +23,7 @@ defmodule Yeelight.Device do
   @color_modes %{"1" => "Color", "2" => "Temperature", "3" => "HSV"}
 
   def from_discovery_response(response_payload) do
-    %Yeelight.Device{
+    device = %Yeelight.Device{
       location: location(response_payload),
       id: device_id(response_payload),
       model: model(response_payload),
@@ -36,12 +36,16 @@ defmodule Yeelight.Device do
       rgb: rgb(response_payload),
       hue: hue(response_payload),
       sat: sat(response_payload),
-      device_name: device_name(response_payload)
+      device_name: device_name(response_payload),
     }
+    device = %{device | controller: create_device_controller(ip(device), port(device))}
+    device
   end
 
-  def update_from_notification(device, response_payload) do
+  def update_from_notification(ip, response_payload) do
     Logger.debug("Starting device update")
+    device = Yeelight.Device.Registry.get_by_ip(ip)
+    Logger.debug("Device before update: #{device |> inspect} with ip #{ip(device) |> inspect}")
     device_update = Jason.decode!(response_payload, keys: :atoms)
     Logger.debug("JSON device update: #{device_update |> inspect}")
     device_state_patch = clean_update_params(device_update[:params])
@@ -125,5 +129,11 @@ defmodule Yeelight.Device do
 
   defp allowed_update_keys do
     List.delete(Map.keys(%Yeelight.Device{}), :__struct__)
+  end
+
+  defp create_device_controller(ip, port) do
+    Logger.debug("Creating device controller for ip: #{ip |> inspect} and port: #{port |> inspect}")
+    {:ok, controller} = Yeelight.Control.start_link(ip, port)
+    controller
   end
 end

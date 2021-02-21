@@ -1,8 +1,16 @@
 <title>Device info</title>
-<p>Device Name: <%= deviceByIP(@ip).device_name %></p>
-<p>Model: <%= deviceByIP(@ip).model %></p>
-<p>Power: <%= deviceByIP(@ip).power %></p>
-<p>Brightness: <%= deviceByIP(@ip).bright %></p>
-<p>Color Mode: <%= deviceByIP(@ip).color_mode %></p>
-<p><a href="/">Back to device list</a></p>
+<p>Device Name: <%= deviceByIP(@ip).device_name %> <br>
+Model: <%= deviceByIP(@ip).model %> <br>
+Power: <%= deviceByIP(@ip).power %> <br>
+Brightness: <%= deviceByIP(@ip).bright %>%<br>
+Color Mode: <%= deviceByIP(@ip).color_mode %> <br>
+Color Temperature: <%= deviceByIP(@ip).ct %> K<br>
+<%= button("Toggle", method: :put, to: updatePath(@ip, :toggle,[]), class: "btn")%> <br> 
+<%= button("Brightness +10%", method: :put, to: updatePath(@ip, :adjust_bright,[10, 500]), class: "btn")%> <br>
+<%= button("Brightness -10%", method: :put, to: updatePath(@ip, :adjust_bright,[-10, 500]), class: "btn")%> <br>
+<%= button("Color Temp +10%", method: :put, to: updatePath(@ip, :adjust_ct,[10, 500]), class: "btn")%> <br>
+<%= button("Color Temp -10%", method: :put, to: updatePath(@ip, :adjust_ct,[-10, 500]), class: "btn")%> <br>
+<%= button("Start Pulse", method: :put, to: updatePath(@ip, :start_cf, pulseColorFlowArgs()), class: "btn")%> <br> 
+<p><a href="/<%= @ip %>/edit">Set Device Name</a></p>
+<a href="/">Back to device list</a></p>
 

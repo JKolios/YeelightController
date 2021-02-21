@@ -2,10 +2,10 @@ defmodule Yeelight.Control do
   require Logger
   use GenServer
 
-  @initial_state %{socket: nil, device: nil}
+  @initial_state %{socket: nil, ip: nil, port: nil}
 
-  def start_link(device) do
-    GenServer.start_link(__MODULE__, %{@initial_state | device: device})
+  def start_link(ip, port) do
+    GenServer.start_link(__MODULE__, %{@initial_state | ip: ip, port: port})
   end
 
   def stop(server, reason \\ :normal) do
@@ -18,9 +18,9 @@ defmodule Yeelight.Control do
   def init(state) do
     Yeelight.Control.MessageIdCounter.start_link()
     
-    {:ok, socket} = open_socket(Yeelight.Device.ip(state[:device]), Yeelight.Device.port(state[:device]))
+    {:ok, socket} = open_socket(state.ip, state.port)
     Logger.debug("Created socket: #{socket |> inspect}")
-    Logger.debug("Opened connection to device: #{state.device.location}")
+    Logger.debug("Opened connection to device: #{state.ip |> inspect}")
     {:ok, %{state | socket: socket}}
   end
 
@@ -49,7 +49,7 @@ defmodule Yeelight.Control do
         
       is_notification_message?(msg) ->
         Logger.debug("Message identified as NOTIFICATION")
-        Yeelight.Device.update_from_notification(state[:device], msg)
+        Yeelight.Device.update_from_notification(state.ip, msg)
 
       is_error_message?(msg) ->
         Logger.debug("Message identified as ERROR")
@@ -81,7 +81,7 @@ defmodule Yeelight.Control do
   end
 
   defp open_socket(ip, port) do
-    opts = [:binary, active: :once, reuseaddr: true, keepalive: false]
+    opts = [:binary, active: true, reuseaddr: true, keepalive: false]
     Logger.debug("Opening TCP socket to #{ip |> inspect}:#{port}")
     :gen_tcp.connect(ip, port, opts)
   end

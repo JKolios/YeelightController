@@ -23,6 +23,7 @@ defmodule Yeelight.Control.Commands do
   end
 
   def set_power(server, power, effect, duration, mode \\ 0) do
+    duration = unless is_integer(duration), do: Integer.parse(duration) |> elem(0), else: duration
     control(server, "set_power", [power, effect, duration, mode])
   end
 
@@ -35,6 +36,8 @@ defmodule Yeelight.Control.Commands do
   end
 
   def start_cf(server, state_count, action, cf_expression) do
+    state_count = unless is_integer(state_count), do: Integer.parse(state_count) |> elem(0), else: state_count
+    action = unless is_integer(action), do: Integer.parse(action) |> elem(0), else: action
     control(server, "start_cf", [state_count, action, cf_expression])
   end
 
@@ -67,6 +70,7 @@ defmodule Yeelight.Control.Commands do
   end
 
   def set_name(server, name) do
+    Logger.debug("Setting name: #{name |> inspect}")
     control(server, "set_name", [name])
   end
 
@@ -119,10 +123,14 @@ defmodule Yeelight.Control.Commands do
   end
 
   def adjust_bright(server, percentage, duration) do
+    percentage = unless is_integer(percentage), do: Integer.parse(percentage) |> elem(0), else: percentage
+    duration = unless is_integer(duration), do: Integer.parse(duration) |> elem(0), else: duration
     control(server, "adjust_bright", [percentage, duration])
   end
 
   def adjust_ct(server, percentage, duration) do
+    percentage = unless is_integer(percentage), do: Integer.parse(percentage) |> elem(0), else: percentage
+    duration = unless is_integer(duration), do: Integer.parse(duration) |> elem(0), else: duration
     control(server, "adjust_ct", [percentage, duration])
   end
 

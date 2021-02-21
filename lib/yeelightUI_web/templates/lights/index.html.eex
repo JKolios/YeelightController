@@ -1,4 +1,4 @@
-<title>Yeelight Devices</title>
+<title><h1>Yeelight Devices</h1></title>
 
 <table>
   <caption> Yeelight Devices</caption>
@@ -9,6 +9,7 @@
     <th>Power</th>
     <th>Brightness</th>
     <th>Color Mode</th>
+    <th>Color Temperature</th>
     <th>Toggle</th> 
   </tr>
 <%= for device <- devices() do %>
@@ -17,9 +18,12 @@
     <td><%= device.device_name %></td>
     <td><%= device.model %></td>
     <td><%= device.power %></td>
-    <td><%= device.bright %></td>
+    <td><%= device.bright %>%</td>
     <td><%= device.color_mode %></td>
-    <td><%= button("Toggle", method: :put, to: YeelightUIWeb.Router.Helpers.lights_path(YeelightUIWeb.Endpoint, :update, ipTupleToString(device.ip)), class: "btn") %></td>
+    <td><%= device.ct %> K</td>
+    <td><%= button("Toggle", method: :put, to: updatePath(ipTupleToString(device.ip), :toggle,[]), class: "btn") %></td>
   </tr>
 <% end %>
 </table>
+<%= button("Turn all off", method: :post, to: createPath(:set_power,["off", "smooth", 500]), class: "btn") %>
+<%= button("Turn all on", method: :post, to: createPath(:set_power,["on", "smooth", 500]), class: "btn") %>
