@@ -12,8 +12,8 @@ defmodule Yeelight.Discovery.Socket do
 
   @impl true
   def init(_args) do
+    Logger.debug("Discovery Socket Initialising")
     socket = udp_discovery_socket()
-    # send_discovery_message()
     {:ok, socket}
   end
 
@@ -48,20 +48,33 @@ defmodule Yeelight.Discovery.Socket do
     Logger.debug("Message data: #{data}")
 
     cond do
-      is_advertisment?(data) ->
-        Logger.debug("Message identified as advertisment")
-        new_device = Yeelight.Device.from_discovery_response(data)
-        Yeelight.Device.Registry.put(ip, new_device)
+      is_advertisment?(data) || is_discovery_response?(data) ->
+        Logger.debug("Message identified as advertisment or discovery response")
+        newDevice = Yeelight.Device.from_discovery_response(data)
+        existingDevice = Yeelight.Device.Registry.get_by_ip(ip)
 
-      is_discovery_response?(data) ->
-        Logger.debug("Message identified as discovery response")
-        new_device = Yeelight.Device.from_discovery_response(data)
-        Yeelight.Device.Registry.put(ip, new_device)
+        newDevice =
+          if !is_nil(existingDevice) do
+            Logger.debug("New detection of known device")
+            %{newDevice | controller: existingDevice.controller}
+          else
+            Logger.debug("Detection of a new device")
+
+            %{
+              newDevice
+              | controller:
+                  Yeelight.Device.create_device_controller(ip, Yeelight.Device.port(newDevice))
+            }
+          end
+
+        Logger.debug("Storing device #{newDevice |> inspect} on ip #{ip |> inspect}")
+        Yeelight.Device.Registry.put(ip, newDevice)
 
       true ->
         Logger.debug("Message discarded")
     end
 
+    Logger.debug("Finished handling message")
     {:noreply, socket}
   end
 
@@ -72,8 +85,9 @@ defmodule Yeelight.Discovery.Socket do
   end
 
   @impl true
-  def terminate(reason, _state) do
-    Logger.debug("Control connection terminating with reason: #{reason}")
+  def terminate(reason, state) do
+    Logger.debug("Terminating the discovery socket. Reason: #{reason |> inspect}")
+    :ok = :gen_tcp.close(state)
   end
 
   defp send_discover_message(socket) do

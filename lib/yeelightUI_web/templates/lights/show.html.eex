@@ -5,12 +5,12 @@ Power: <%= deviceByIP(@ip).power %> <br>
 Brightness: <%= deviceByIP(@ip).bright %>%<br>
 Color Mode: <%= deviceByIP(@ip).color_mode %> <br>
 Color Temperature: <%= deviceByIP(@ip).ct %> K<br>
-<%= button("Toggle", method: :put, to: updatePath(@ip, :toggle,[]), class: "btn")%> <br> 
-<%= button("Brightness +10%", method: :put, to: updatePath(@ip, :adjust_bright,[10, 500]), class: "btn")%> <br>
-<%= button("Brightness -10%", method: :put, to: updatePath(@ip, :adjust_bright,[-10, 500]), class: "btn")%> <br>
-<%= button("Color Temp +10%", method: :put, to: updatePath(@ip, :adjust_ct,[10, 500]), class: "btn")%> <br>
-<%= button("Color Temp -10%", method: :put, to: updatePath(@ip, :adjust_ct,[-10, 500]), class: "btn")%> <br>
-<%= button("Start Pulse", method: :put, to: updatePath(@ip, :start_cf, pulseColorFlowArgs()), class: "btn")%> <br> 
+<%= button("Toggle", method: :put, to: Helpers.lights_path(YeelightUIWeb.Endpoint, :update, @ip, controlFunctionName: :toggle, controlFunctionParams: []), class: "btn")%> <br> 
+<%= button("Brightness +10%", method: :put, to: Helpers.lights_path(YeelightUIWeb.Endpoint, :update, @ip, controlFunctionName: :adjust_bright, controlFunctionParams: [10, 500]), class: "btn")%> <br>
+<%= button("Brightness -10%", method: :put, to: Helpers.lights_path(YeelightUIWeb.Endpoint, :update,  @ip, controlFunctionName: :adjust_bright, controlFunctionParams: [-10, 500]), class: "btn")%> <br>
+<%= button("Color Temp +10%", method: :put, to: Helpers.lights_path(YeelightUIWeb.Endpoint, :update,  @ip, controlFunctionName: :adjust_ct, controlFunctionParams: [10, 500]), class: "btn")%> <br>
+<%= button("Color Temp -10%", method: :put, to: Helpers.lights_path(YeelightUIWeb.Endpoint, :update,  @ip, controlFunctionName: :adjust_ct, controlFunctionParams: [-10, 500]), class: "btn")%> <br>
+<%= button("Start Pulse", method: :put, to: Helpers.lights_path(YeelightUIWeb.Endpoint, :update,  @ip, controlFunctionName: :start_cf, controlFunctionParams: pulseColorFlowArgs()), class: "btn")%> <br> 
 <p><a href="/<%= @ip %>/edit">Set Device Name</a></p>
 <a href="/">Back to device list</a></p>
 

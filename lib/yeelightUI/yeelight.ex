@@ -30,6 +30,7 @@ defmodule Yeelight do
         Logger.debug("Params: #{params |> inspect}")
         result = apply(Yeelight.Control.Commands, func_name, [device.controller | params])
         Logger.debug("Command result: #{result}")
+
         if result == :error do
           Logger.debug("Command error")
         end

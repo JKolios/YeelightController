@@ -8,20 +8,18 @@ defmodule Yeelight.Control do
     GenServer.start_link(__MODULE__, %{@initial_state | ip: ip, port: port})
   end
 
-  def stop(server, reason \\ :normal) do
-    Logger.debug("Shutting down the control server")
-    GenServer.stop(server, reason)
-  end
-
   # Callbacks
   @impl true
   def init(state) do
     Yeelight.Control.MessageIdCounter.start_link()
-    
-    {:ok, socket} = open_socket(state.ip, state.port)
-    Logger.debug("Created socket: #{socket |> inspect}")
-    Logger.debug("Opened connection to device: #{state.ip |> inspect}")
-    {:ok, %{state | socket: socket}}
+
+    case init_control_socket(state.ip, state.port) do
+      {:ok, socket} ->
+        {:ok, %{state | socket: socket}}
+
+      {:error, _} ->
+        {:stop, "Socket could not be opened", state}
+    end
   end
 
   @impl true
@@ -29,10 +27,12 @@ defmodule Yeelight.Control do
     payload = Yeelight.Control.Message.construct(method, params)
     Logger.debug("Sending control payload: #{payload}")
     Logger.debug("Using socket: #{state[:socket] |> inspect}")
+
     case :gen_tcp.send(state[:socket], payload) do
       :ok ->
         Logger.debug("Control payload sent")
         {:reply, :ok, state}
+
       {:error, cause} ->
         Logger.debug("Control payload send error, cause: #{cause |> inspect}")
         {:reply, :error, state}
@@ -43,10 +43,11 @@ defmodule Yeelight.Control do
   def handle_info({:tcp, socket, msg}, state) do
     Logger.debug("Received message on control connection: #{msg}")
     :inet.setopts(socket, active: :once)
+
     cond do
       is_result_message?(msg) ->
         Logger.debug("Message identified as RESULT")
-        
+
       is_notification_message?(msg) ->
         Logger.debug("Message identified as NOTIFICATION")
         Yeelight.Device.update_from_notification(state.ip, msg)
@@ -58,21 +59,28 @@ defmodule Yeelight.Control do
       true ->
         Logger.debug("Message discarded. This indicates a bug")
     end
-    
+
     {:noreply, state}
   end
-  
+
   @impl true
-  def handle_info({:tcp_closed, _socket}, state) do
-    Logger.debug("TCP socket closed")
-    {:stop, "Socket is closed", state} 
+  def handle_info({:tcp_closed, socket}, state) do
+    Logger.debug("TCP socket #{socket |> inspect} closed, trying to reopen")
+
+    case init_control_socket(state.ip, state.port) do
+      {:ok, socket} ->
+        {:ok, %{state | socket: socket}}
+
+      {:error, _} ->
+        {:stop, "Socket could not be opened", state}
+    end
   end
-  
-  @impl true  
-  def handle_info({:tcp_error, _socket, reason}, state) do      
-    Logger.error("Tcp error: #{inspect(reason)}")    
+
+  @impl true
+  def handle_info({:tcp_error, _socket, reason}, state) do
+    Logger.error("Tcp error: #{inspect(reason)}")
     {:stop, "Tcp error: #{inspect(reason)}", state}
-  end  
+  end
 
   @impl true
   def terminate(reason, state) do
@@ -80,21 +88,30 @@ defmodule Yeelight.Control do
     :ok = :gen_tcp.close(state[:socket])
   end
 
-  defp open_socket(ip, port) do
-    opts = [:binary, active: true, reuseaddr: true, keepalive: false]
+  defp init_control_socket(ip, port) do
     Logger.debug("Opening TCP socket to #{ip |> inspect}:#{port}")
-    :gen_tcp.connect(ip, port, opts)
+    opts = [:binary, active: true, reuseaddr: true, keepalive: false]
+
+    case :gen_tcp.connect(ip, port, opts) do
+      {:ok, socket} ->
+        Logger.debug("Opened socket: #{socket |> inspect} to device: #{ip |> inspect}")
+        {:ok, socket}
+
+      {:error, cause} ->
+        Logger.debug("Socket open error: #{cause |> inspect}")
+        {:error, cause}
+    end
   end
 
-  def is_result_message?(msg) do
+  defp is_result_message?(msg) do
     Regex.match?(~r/\"result\"/, msg)
   end
 
-  def is_notification_message?(msg) do
+  defp is_notification_message?(msg) do
     Regex.match?(~r/{\"method\":\"props\"/, msg)
   end
 
-  def is_error_message?(msg) do
+  defp is_error_message?(msg) do
     Regex.match?(~r/\"error\":/, msg)
   end
 end

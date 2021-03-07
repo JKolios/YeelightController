@@ -15,7 +15,6 @@ defmodule Yeelight.Discovery.MessageSender do
     after
       @discovery_period ->
         Logger.debug("Sending scheduled discovery message")
-        Yeelight.Device.Registry.clear()
         Yeelight.Discovery.Socket.send_discovery_message()
         poll()
     end

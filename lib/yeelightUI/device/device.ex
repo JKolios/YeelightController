@@ -23,7 +23,7 @@ defmodule Yeelight.Device do
   @color_modes %{"1" => "Color", "2" => "Temperature", "3" => "HSV"}
 
   def from_discovery_response(response_payload) do
-    device = %Yeelight.Device{
+    %Yeelight.Device{
       location: location(response_payload),
       id: device_id(response_payload),
       model: model(response_payload),
@@ -36,10 +36,8 @@ defmodule Yeelight.Device do
       rgb: rgb(response_payload),
       hue: hue(response_payload),
       sat: sat(response_payload),
-      device_name: device_name(response_payload),
+      device_name: device_name(response_payload)
     }
-    device = %{device | controller: create_device_controller(ip(device), port(device))}
-    device
   end
 
   def update_from_notification(ip, response_payload) do
@@ -131,8 +129,11 @@ defmodule Yeelight.Device do
     List.delete(Map.keys(%Yeelight.Device{}), :__struct__)
   end
 
-  defp create_device_controller(ip, port) do
-    Logger.debug("Creating device controller for ip: #{ip |> inspect} and port: #{port |> inspect}")
+  def create_device_controller(ip, port) do
+    Logger.debug(
+      "Creating device controller for ip: #{ip |> inspect} and port: #{port |> inspect}"
+    )
+
     {:ok, controller} = Yeelight.Control.start_link(ip, port)
     controller
   end

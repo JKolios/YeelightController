@@ -21,9 +21,9 @@
     <td><%= device.bright %>%</td>
     <td><%= device.color_mode %></td>
     <td><%= device.ct %> K</td>
-    <td><%= button("Toggle", method: :put, to: updatePath(ipTupleToString(device.ip), :toggle,[]), class: "btn") %></td>
+    <td><%= button("Toggle", method: :put, to: Helpers.lights_path(YeelightUIWeb.Endpoint, :update, ipTupleToString(device.ip), controlFunctionName: :toggle, controlFunctionParams: []), class: "btn") %></td>
   </tr>
 <% end %>
 </table>
-<%= button("Turn all off", method: :post, to: createPath(:set_power,["off", "smooth", 500]), class: "btn") %>
-<%= button("Turn all on", method: :post, to: createPath(:set_power,["on", "smooth", 500]), class: "btn") %>
+<%= button("Turn all off", method: :post, to: Helpers.lights_path(YeelightUIWeb.Endpoint, :create, controlFunctionName:  :set_power, controlFunctionParams: ["off", "smooth", 500]), class: "btn") %>
+<%= button("Turn all on", method: :post, to: Helpers.lights_path(YeelightUIWeb.Endpoint, :create, controlFunctionName: :set_power, controlFunctionParams: ["on", "smooth", 500]), class: "btn") %>

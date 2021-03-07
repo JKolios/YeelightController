@@ -3,7 +3,8 @@ defmodule Yeelight.Control.Message do
   defstruct [:id, :method, :params]
 
   def construct(method, params) do
-      encoded = Jason.encode!(%Yeelight.Control.Message{
+    encoded =
+      Jason.encode!(%Yeelight.Control.Message{
         id: Yeelight.Control.MessageIdCounter.next_id(),
         method: method,
         params: params
