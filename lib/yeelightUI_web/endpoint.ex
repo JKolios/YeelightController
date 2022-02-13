@@ -10,6 +10,8 @@ defmodule YeelightUIWeb.Endpoint do
     signing_salt: "ZGWKVkbx"
   ]
 
+  socket "/live", Phoenix.LiveView.Socket
+
   socket "/socket", YeelightUIWeb.UserSocket,
     websocket: true,
     longpoll: false
