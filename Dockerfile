@@ -21,4 +21,4 @@ RUN mix do compile
 
 EXPOSE 4000
 
-CMD mix phx.server
+CMD ["/usr/local/bin/mix", "phx.server"]
