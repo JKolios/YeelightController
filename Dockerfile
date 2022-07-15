@@ -1,9 +1,20 @@
 # Extend from the official Elixir image.
 FROM elixir:1.7-alpine
 
+# Install package dependencies
+RUN apk add --no-cache --update \
+        inotify-tools \
+        nodejs npm yarn
+
 # Create app directory and copy the Elixir projects into it.
 RUN mkdir /app
 COPY . /app
+
+# Compile npm assets
+WORKDIR /app/assets
+RUN npm install
+
+# Return to the application root dir
 WORKDIR /app
 
 # Install Hex package manager.
