@@ -3,6 +3,6 @@ defmodule YeelightUIWeb.LightsControllerTest do
 
   test "GET /lights", %{conn: conn} do
     conn = get(conn, "/lights")
-    assert html_response(conn, 200) =~ "<html>"
+    assert html_response(conn, 200) =~ "<!DOCTYPE html>"
   end
 end
