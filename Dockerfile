@@ -3,8 +3,10 @@ FROM elixir:1.7-alpine
 
 # Install package dependencies
 RUN apk add --no-cache --update \
-        inotify-tools \
-        nodejs npm yarn
+    git \
+    python3 py3-pip \
+    inotify-tools \
+    nodejs npm yarn
 
 # Create app directory and copy the Elixir projects into it.
 RUN mkdir /app
