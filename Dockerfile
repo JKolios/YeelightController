@@ -3,7 +3,7 @@ FROM elixir:1.7-alpine
 
 # Install package dependencies
 RUN apk add --no-cache --update \
-    git make \
+    git make g++\
     python3 py3-pip \
     inotify-tools \
     nodejs npm yarn
