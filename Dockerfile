@@ -13,6 +13,9 @@ RUN mix local.hex --force
 # Get all dependencies
 RUN mix deps.get
 
+# Force update rebar
+RUN mix local.rebar --force
+
 # Compile the project.
 RUN mix do compile
 
