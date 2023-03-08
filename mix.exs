@@ -7,7 +7,6 @@ defmodule YeelightUI.MixProject do
       version: "0.1.0",
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -33,10 +32,12 @@ defmodule YeelightUI.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.7"},
-      {:phoenix_html, "~> 2.11"},
+      {:phoenix, "~> 1.7.1", override: true},
+      {:phoenix_live_view, "~> 0.18.3"},
+      {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_dashboard, "~> 0.4"},
+      {:phoenix_live_dashboard, "~> 0.7.2"},
+      {:phoenix_view, "~> 2.0"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},
@@ -44,7 +45,8 @@ defmodule YeelightUI.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:socket, "~> 0.3"},
       {:poison, "~> 3.1"},
-      {:timex, "~> 3.0"}
+      {:timex, "~> 3.0"},
+      {:esbuild, "~> 0.5", runtime: Mix.env() == :dev}
     ]
   end
 
@@ -56,7 +58,8 @@ defmodule YeelightUI.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "cmd npm install --prefix assets"]
+      setup: ["deps.get"],
+      "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]
   end
 end

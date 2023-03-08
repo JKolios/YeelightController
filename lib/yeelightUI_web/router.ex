@@ -12,9 +12,11 @@ defmodule YeelightUIWeb.Router do
   pipeline :api do
     plug :accepts, ["json"]
   end
+  
 
   scope "/", YeelightUIWeb do
     pipe_through :browser
+    get "/", LightsController, :index
     resources "/lights", LightsController, only: [:index, :show, :update, :create, :edit]
     if Mix.env() in [:dev, :test] do
       import Phoenix.LiveDashboard.Router

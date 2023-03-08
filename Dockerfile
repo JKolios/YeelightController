@@ -1,20 +1,10 @@
 # Extend from the official Elixir image.
-FROM elixir:1.7-alpine
+FROM elixir:1.14.3-alpine
 
 # Install package dependencies
-RUN apk add --no-cache --update \
-    git make g++\
-    python3 py3-pip \
-    inotify-tools \
-    nodejs npm yarn
+RUN apk add --no-cache --update inotify-tools
 
-# Create app directory and copy the Elixir projects into it.
-RUN mkdir /app
-COPY . /app
-
-# Compile npm assets
-WORKDIR /app/assets
-RUN npm install
+ADD . /app
 
 # Return to the application root dir
 WORKDIR /app
@@ -28,6 +18,9 @@ RUN mix deps.get
 
 # Force update rebar
 RUN mix local.rebar --force
+
+# Compile and digest assets
+RUN mix assets.deploy
 
 # Compile the project.
 RUN mix do compile
