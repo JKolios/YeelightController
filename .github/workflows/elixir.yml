@@ -37,7 +37,7 @@ jobs:
       run: mix test
 
   build-and-push-amd64-image:
-    name: Build and push Docker Image
+    name: Build and push amd64 Docker Image
     runs-on: ubuntu-20.04
     permissions:
       contents: read
@@ -76,7 +76,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   build-and-push-arm64-image:
-    name: Build and push Docker Image
+    name: Build and push arm64 Docker Image
     runs-on: [self-hosted, macOS, ARM64]
     permissions:
       contents: read
