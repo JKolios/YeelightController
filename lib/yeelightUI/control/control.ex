@@ -84,7 +84,7 @@ defmodule Yeelight.Control do
 
   @impl true
   def terminate(reason, state) do
-    Logger.debug("Terminating the control server. Reason: #{reason}")
+    Logger.debug("Terminating the control server. Reason: #{inspect(reason)}")
     :ok = :gen_tcp.close(state[:socket])
   end
 
