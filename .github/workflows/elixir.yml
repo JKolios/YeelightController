@@ -77,7 +77,7 @@ jobs:
 
   build-and-push-arm64-image:
     name: Build and push arm64 Docker Image
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: [self-hosted, Linux, ARM64]
     permissions:
       contents: read
       packages: write
